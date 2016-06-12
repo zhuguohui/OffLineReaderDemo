@@ -16,8 +16,12 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url 'https://dl.bintray.com/zhuguohui/maven'
+        }
     }
     tasks.withType(Javadoc).all { enabled = false }
+
 }
 
 task clean(type: Delete) {
