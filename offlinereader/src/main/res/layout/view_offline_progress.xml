@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="55dp"
+    android:layout_height="55dp"
+    >
+    <com.zgh.offlinereader.view.water_wave_progress.WaterWaveProgress
+        android:layout_centerInParent="true"
+        android:id="@+id/waterWaveProgress"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:showProgress="false"
+         />
+    <TextView
+        android:id="@+id/tv_title"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="9sp"
+        android:text="正在离线"
+        android:textColor="@android:color/white" />
+</RelativeLayout>

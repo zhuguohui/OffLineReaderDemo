@@ -1,0 +1,16 @@
+
+ [
+    {
+      "title": "今日头条",
+      "url": "raw://today_news"
+    },
+
+    {
+      "title": "体育新闻",
+      "url": "raw://tiyu_news"
+    },
+    {
+      "title": "科技新闻",
+      "url": "raw://keji_news"
+    }
+  ]

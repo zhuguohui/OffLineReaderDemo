@@ -1,0 +1,62 @@
+apply plugin: 'com.android.library'
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'TRSHttp'
+
+    publishedGroupId = 'com.zgh.trshttp'
+    libraryName = 'TRSHttp'
+    artifact = 'trshttp'
+
+    libraryDescription = 'A HTTP Util for Android'
+
+    siteUrl = 'https://github.com/zhuguohui/CollapsibleListViewDemo'
+    gitUrl = 'https://github.com/zhuguohui/CollapsibleListViewDemo'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'zhuguohui'
+    developerName = 'zhuguohui'
+    developerEmail = '287718603@qq.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    //okhttp依赖okio
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okio:okio:1.5.0'
+    compile 'com.zhy:okhttputils:2.2.0'
+}
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+
+// gradlew install
+// gradlew bintrayUpload

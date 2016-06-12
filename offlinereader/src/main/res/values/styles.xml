@@ -1,0 +1,10 @@
+<resources>
+
+
+
+    <style name="offline_anim_style">
+        <item name="android:windowEnterAnimation">@anim/offline_show</item>
+        <item name="android:windowExitAnimation">@anim/offline_hide</item>
+    </style>
+
+</resources>
