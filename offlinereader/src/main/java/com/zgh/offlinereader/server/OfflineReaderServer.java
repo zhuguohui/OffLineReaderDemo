@@ -159,25 +159,27 @@ public class OfflineReaderServer extends Service {
             mWebView.setFinishListenter(new MyWebView.OnLoadFinishListenter() {
                 @Override
                 public void onFinish() {
-                    int index = mNeedLoadUrlList.indexOf(mWebView.getUrl());
-                    if(index==-1){
-                        return;
+
+                        int index = mNeedLoadUrlList.indexOf(mWebView.getUrl());
+                        if (index == -1) {
+                            return;
+                        }
+                        int present = (int) (index * 100.0 / (mNeedLoadUrlSet.size() - 1));
+                        Log.i("zzz", "onPageFinished present=" + present);
+                        updatePro(present);
+                        index++;
+                        if (index <= mNeedLoadUrlSet.size() - 1) {
+                            String nextUrl = mNeedLoadUrlList.get(index);
+                            Downloadurl = nextUrl;
+                            mWebView.loadUrl(nextUrl);
+                        }
+                        //离线完成
+                        if (present == 100) {
+                            closePro();
+                            stopSelf();
+                        }
                     }
-                    int present = (int) (index * 100.0 / (mNeedLoadUrlSet.size() - 1));
-                    Log.i("zzz", "onPageFinished present=" + present);
-                    updatePro(present);
-                    index++;
-                    if (index <= mNeedLoadUrlSet.size()-1) {
-                        String nextUrl = mNeedLoadUrlList.get(index);
-                        Downloadurl = nextUrl;
-                        mWebView.loadUrl(nextUrl);
-                    }
-                    //离线完成
-                    if (present == 100) {
-                        closePro();
-                        stopSelf();
-                    }
-                }
+
             });
             mWebView.setWebViewClient(new WebViewClient() {
 
