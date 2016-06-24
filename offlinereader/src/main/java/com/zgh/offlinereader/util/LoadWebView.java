@@ -6,20 +6,20 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.webkit.WebView;
 
 /**
- * Created by yuelin on 2016/6/24.
+ *  可以监听显示完成的webview
+ * Created by zhuguohui on 2016/6/24.
  */
-public class MyWebView extends WebView {
+public class LoadWebView extends WebView {
     private boolean isRendered = false;
     private static final int MSG_FINISH=1;
     private static final int MIN_CONTENT_HEIGHT=1000;
-    public MyWebView(Context context) {
+    public LoadWebView(Context context) {
         this(context, null);
     }
-    public MyWebView(Context context, AttributeSet attrs) {
+    public LoadWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
     private int contentHeight=MIN_CONTENT_HEIGHT;
@@ -37,7 +37,6 @@ public class MyWebView extends WebView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.i("zzz", "contentHeight=" + getContentHeight());
         if(getContentHeight()>=contentHeight){
             contentHeight=getContentHeight();
             handler.removeMessages(MSG_FINISH);

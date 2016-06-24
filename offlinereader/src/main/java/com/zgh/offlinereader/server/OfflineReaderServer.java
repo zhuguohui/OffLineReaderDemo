@@ -3,7 +3,6 @@ package com.zgh.offlinereader.server;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -11,16 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.WindowManager;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.zgh.offlinereader.OffLineLevelItem;
 import com.zgh.offlinereader.ui.OffLineProgressUI;
-import com.zgh.offlinereader.util.MyWebView;
+import com.zgh.offlinereader.util.LoadWebView;
 import com.zgh.offlinereader.util.WebViewHelper;
 import com.zgh.trshttp.TRSHttpUtil;
 import com.zgh.trshttp.callback.TRSStringHttpCallback;
@@ -40,8 +34,7 @@ import java.util.concurrent.Executors;
  */
 public class OfflineReaderServer extends Service {
     private static final int MSG_DOWNLOADFINSH = 1;
-    private static final int MSG_UPDATE = 2;
-    private MyWebView mWebView = null;
+    private LoadWebView mWebView = null;
     private static final String TAG = OfflineReaderServer.class.getSimpleName();
     private boolean isRunning = false;
     public Set<String> mNeedLoadUrlSet = new HashSet<>();
@@ -98,38 +91,13 @@ public class OfflineReaderServer extends Service {
                     //下载网页
                     downloadWebpages();
                     break;
-                case MSG_UPDATE:
-                    update();
-                    break;
 
             }
         }
     };
-    private String Downloadurl = "";
 
-    private void update() {
-        // Log.i("zzz", "progress=" + mWebView.getProgress());
-        if (mWebView.getProgress() == 100 && mWebView.getUrl().equals(Downloadurl)) {
-            int index = mNeedLoadUrlList.indexOf(mWebView.getUrl());
-            int present = (int) (index * 100.0 / (mNeedLoadUrlSet.size() - 1));
-            Log.i("zzz", "onPageFinished present=" + present);
-            updatePro(present);
-            index++;
-            if (index < mNeedLoadUrlSet.size()) {
-                String nextUrl = mNeedLoadUrlList.get(index);
-                Downloadurl = nextUrl;
-                mWebView.loadUrl(nextUrl);
-            }
-            //离线完成
-            if (present == 100) {
-                closePro();
-                stopSelf();
-            }
-        }
 
-        handler.sendEmptyMessageDelayed(MSG_UPDATE, 100);
 
-    }
 
     public static void setFirstLevel(@NonNull OffLineLevelItem offLineLevelItem) {
         sFirstLevelItem = offLineLevelItem;
@@ -140,7 +108,6 @@ public class OfflineReaderServer extends Service {
         mNeedLoadUrlList.clear();
         mNeedLoadUrlList = new ArrayList<>(mNeedLoadUrlSet);
         if (mNeedLoadUrlSet.size() > 0) {
-            Downloadurl = mNeedLoadUrlList.get(0);
             mWebView.loadUrl(mNeedLoadUrlList.get(0));
 
         } else {
@@ -154,57 +121,31 @@ public class OfflineReaderServer extends Service {
     private void initWebView() {
 
         if (mWebView == null) {
-            mWebView = new MyWebView(this);
+            mWebView = new LoadWebView(this);
             WebViewHelper.setWebViewConfig(mWebView);
-            mWebView.setFinishListenter(new MyWebView.OnLoadFinishListenter() {
+            mWebView.setFinishListenter(new LoadWebView.OnLoadFinishListenter() {
                 @Override
                 public void onFinish() {
 
-                        int index = mNeedLoadUrlList.indexOf(mWebView.getUrl());
-                        if (index == -1) {
-                            return;
-                        }
-                        int present = (int) (index * 100.0 / (mNeedLoadUrlSet.size() - 1));
-                        Log.i("zzz", "onPageFinished present=" + present);
-                        updatePro(present);
-                        index++;
-                        if (index <= mNeedLoadUrlSet.size() - 1) {
-                            String nextUrl = mNeedLoadUrlList.get(index);
-                            Downloadurl = nextUrl;
-                            mWebView.loadUrl(nextUrl);
-                        }
-                        //离线完成
-                        if (present == 100) {
-                            closePro();
-                            stopSelf();
-                        }
+                    int index = mNeedLoadUrlList.indexOf(mWebView.getUrl());
+                    if (index == -1) {
+                        return;
                     }
-
-            });
-            mWebView.setWebViewClient(new WebViewClient() {
-
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Log.i("zzz", "shouldOverrideUrlLoading");
-                    return super.shouldOverrideUrlLoading(view, url);
+                    int present = (int) (index * 100.0 / (mNeedLoadUrlSet.size() - 1));
+                    Log.i("zzz", "onPageFinished present=" + present);
+                    updatePro(present);
+                    index++;
+                    if (index <= mNeedLoadUrlSet.size() - 1) {
+                        String nextUrl = mNeedLoadUrlList.get(index);
+                        mWebView.loadUrl(nextUrl);
+                    }
+                    //离线完成
+                    if (present == 100) {
+                        closePro();
+                        stopSelf();
+                    }
                 }
 
-                @Override
-                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                    Log.i("zzz", "onReceivedError1 error=" + error);
-                    super.onReceivedError(view, request, error);
-                }
-
-                @Override
-                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    Log.i("zzz", "onReceivedError2 errorcode" + errorCode);
-                    super.onReceivedError(view, errorCode, description, failingUrl);
-                }
-
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    Log.i("zzz", "webView onPageFinished");
-                }
             });
         }
     }
@@ -227,7 +168,6 @@ public class OfflineReaderServer extends Service {
     public void onDestroy() {
         super.onDestroy();
         windowManager.removeView(mWebView);
-        handler.removeMessages(MSG_UPDATE);
         isRunning = false;
         pool.shutdownNow();
     }
